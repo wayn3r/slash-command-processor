@@ -8,6 +8,7 @@ jobs:
     steps:
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v4
+        id: comment
         with:
           token: ${{ secrets.PAT }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -15,3 +16,12 @@ jobs:
           body: |
             > Pull request message successfully deployed
           reactions: ${{ github.event.client_payload.slash_command.args.named.reaction || 'hooray' }}
+      - name: Edit comment with error message
+        if: steps.comment.outputs.error-message
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.comment.id }}
+          body: |
+            > ${{ steps.comment.outputs.error-message }}
