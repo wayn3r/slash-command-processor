@@ -15,7 +15,7 @@ jobs:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           # body: |
           #   > Pull request message successfully deployed
-          # reactions: ${{ github.event.client_payload.slash_command.args.named.reaction || 'hooray' }}
+          reactions: ${{ github.event.client_payload.slash_command.args.named.reaction || 'hooray' }}
       - name: Edit comment with error message
         if: steps.comment.outputs.error-message
         uses: peter-evans/create-or-update-comment@v4
