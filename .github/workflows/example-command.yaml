@@ -12,4 +12,6 @@ jobs:
           token: ${{ secrets.PAT }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
-          reactions: hooray
+           body: |
+            > Pull request message successfully deployed
+          reactions: ${{ github.event.client_payload.slash_command.args.named.reaction || hooray }}
