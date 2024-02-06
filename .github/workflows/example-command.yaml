@@ -34,4 +34,4 @@ jobs:
           command: get pods 2>&1 | tee /github/home/deploy.log
       - run: |
           echo $PWD
-          cat /github/home/deploy.log
+          cat /home/runner/work/_temp/_github_home/deploy.log
