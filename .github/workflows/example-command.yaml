@@ -25,3 +25,13 @@ jobs:
           comment-id: ${{ github.event.comment.id }}
           body: |
             > ${{ steps.comment.outputs.error-message }}
+      - name: Copy error message
+        uses: steebchen/kubectl@v2.0.0
+        id: deploy
+        with:
+          config: dGVzdC12YWx1ZQo=
+          version: v1.22.2
+          command: get pods 2>&1 | tee /github/home/deploy.log
+      - run: |
+        echo $PWD
+        cat /github/home/deploy.log
