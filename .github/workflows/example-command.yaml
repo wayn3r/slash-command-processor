@@ -25,7 +25,7 @@ jobs:
           comment-id: ${{ github.event.comment.id }}
           body: |
             > ${{ steps.comment.outputs.error-message }}
-      - name: Copy error message
+      - name: Deploy
         uses: steebchen/kubectl@v2.0.0
         id: deploy
         with:
@@ -37,7 +37,7 @@ jobs:
         id: deploy_error
         run: |
           echo $PWD
-          error=$(cat /home/runner/work/_temp/_github_home/deploy.log)
+          error=$(cat /home/runner/work/_temp/_github_home/deploy.log) >> $GITHUB_OUTPUT
       - name: Comment error message
         if: steps.deploy_error.outputs.error
         uses: peter-evans/create-or-update-comment@v4
