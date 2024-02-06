@@ -1,0 +1,49 @@
+name: example-error-command
+on:
+  repository_dispatch:
+    types: [example-error-command]
+jobs:
+  example:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add reaction
+        uses: peter-evans/create-or-update-comment@v4
+        id: comment
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          # body: |
+          #   > Pull request message successfully deployed
+          reactions: ${{ github.event.client_payload.slash_command.args.named.reaction || 'hooray' }}
+      - name: Edit comment with error message
+        if: steps.comment.outputs.error-message
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.comment.id }}
+          body: |
+            > ${{ steps.comment.outputs.error-message }}
+      - name: Deploy
+        uses: steebchen/kubectl@v2.0.0
+        id: deploy
+        with:
+          config: dGVzdC12YWx1ZQo=
+          version: v1.22.2
+          command: get pods 2>&1 | tee deploy.log; exit_code=${PIPESTATUS[0]}; echo "error=$(cat deploy.log)" >> $GITHUB_OUTPUT; exit "$exit_code"
+
+      - name: Comment error message
+        if: failure()
+        uses: peter-evans/create-or-update-comment@v4
+        id: comment_error
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            
+            > [!CAUTION]
+            > Deployment failed with following error:
+            > **${{ steps.deploy.outputs.error }}**
+          reactions: "-1"
