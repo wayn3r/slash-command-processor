@@ -37,9 +37,10 @@ jobs:
         id: deploy_error
         run: |
           error=$(cat /home/runner/work/_temp/_github_home/deploy.log)
+          echo $error
           echo "error=$error" >> $GITHUB_OUTPUT
       - name: Comment error message
-        if: steps.deploy_error.outputs.error
+        if: failure() || steps.deploy_error.outputs.error
         uses: peter-evans/create-or-update-comment@v4
         id: comment_error
         with:
