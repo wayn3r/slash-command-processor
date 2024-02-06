@@ -31,8 +31,7 @@ jobs:
         with:
           config: dGVzdC12YWx1ZQo=
           version: v1.22.2
-          command: get pods 2>&1 | tee deploy.log; exit_code=${PIPESTATUS[0]}; echo "error=$(cat deploy.log)" >> $GITHUB_OUTPUT; exit "$exit_code"
-
+          command: get pods 2>&1 | tee deploy.log; exit ${PIPESTATUS[0]};
       - name: Comment error message
         if: failure()
         uses: peter-evans/create-or-update-comment@v4
@@ -45,5 +44,5 @@ jobs:
             
             > [!CAUTION]
             > Deployment failed with following error:
-            > **${{ steps.deploy.outputs.error }}**
+            > **${{ cat deploy.log }}**
           reactions: "-1"
