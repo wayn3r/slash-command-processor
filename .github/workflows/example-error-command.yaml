@@ -5,7 +5,7 @@ on:
 jobs:
   check_non_deployed_pr:
     runs-on: ubuntu-latest
-    if: '!contains(github.event.client_payload.github.payload.issue.labels.*.name, 'deployed')'
+    if: ${{ !contains(github.event.client_payload.github.payload.issue.labels.*.name, 'deployed') }}
     steps:
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v4
