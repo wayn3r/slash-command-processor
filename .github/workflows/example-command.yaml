@@ -31,7 +31,23 @@ jobs:
         with:
           config: dGVzdC12YWx1ZQo=
           version: v1.22.2
-          command: get pods 2>&1 | tee /github/home/deploy.log
-      - run: |
+          command: get pods 2>&1 | tee /github/home/deploy.log; exit "${PIPESTATUS[0]}"
+      - name: Catch error message
+        if: failure()
+        id: deploy_error
+        run: |
           echo $PWD
-          cat /home/runner/work/_temp/_github_home/deploy.log
+          error=$(cat /home/runner/work/_temp/_github_home/deploy.log)
+      - name: Comment error message
+        if: steps.deploy_error.outputs.error
+        uses: peter-evans/create-or-update-comment@v4
+        id: comment_error
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            > [!CAUTION]
+            > Deployment failed with following error:
+            > **${{ steps.deploy_error.outputs.error }}**
+          reactions: "-1"
