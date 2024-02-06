@@ -3,8 +3,27 @@ on:
   repository_dispatch:
     types: [example-error-command]
 jobs:
+  check_non_deployed_pr:
+    runs-on: ubuntu-latest
+    if: '!contains(github.event.client_payload.github.payload.issue.labels.*.name, 'deployed')'
+    steps:
+      - name: Add reaction
+        uses: peter-evans/create-or-update-comment@v4
+        id: comment
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            
+            > [!WARNING]
+            > Wait for the Preview Environment to be deployed
+            > **You can use Slash Command once this PR is labeled with the `deployed` tag
+          reactions: ${{ github.event.client_payload.slash_command.args.named.reaction || 'confused' }}
+
   example:
     runs-on: ubuntu-latest
+    if: contains(github.event.client_payload.github.payload.issue.labels.*.name, 'deployed')
     steps:
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v4
@@ -15,7 +34,7 @@ jobs:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           # body: |
           #   > Pull request message successfully deployed
-          reactions: ${{ github.event.client_payload.slash_command.args.named.reaction || 'hooray' }}
+          reactions: ${{ github.event.client_payload.slash_command.args.named.reaction || 'eyes' }}
       - name: Edit comment with error message
         if: steps.comment.outputs.error-message
         uses: peter-evans/create-or-update-comment@v4
