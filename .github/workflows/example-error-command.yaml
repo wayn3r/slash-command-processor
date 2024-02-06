@@ -18,7 +18,7 @@ jobs:
             
             > [!WARNING]
             > Wait for the Preview Environment to be deployed
-            > **You can use Slash Command once this PR is labeled with the `deployed` tag
+            > **You can use Slash Command once this PR is labeled with the `deployed` tag**
           reactions: ${{ github.event.client_payload.slash_command.args.named.reaction || 'confused' }}
 
   example:
