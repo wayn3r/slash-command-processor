@@ -33,5 +33,5 @@ jobs:
           version: v1.22.2
           command: get pods 2>&1 | tee /github/home/deploy.log
       - run: |
-        echo $PWD
-        cat /github/home/deploy.log
+          echo $PWD
+          cat /github/home/deploy.log
