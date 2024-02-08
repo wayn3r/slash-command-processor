@@ -73,3 +73,6 @@ jobs:
             > Deployment failed with following error:
             > **${{ steps.deploy_error.outputs.error }}**
           reactions: "-1"
+      - name: Log payload
+        if: always()
+        run: echo "${{ toJSON(github.event.client_payload) }}"
